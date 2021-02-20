@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.schedulelistmapper">
+	<select id="selectAll" resultType="scheduleList">
+		select u.nickname nickname, c.name city, na.name nation, sl.* 
+		from schedule_list sl
+		left outer join user u on sl.u_id = u.u_id
+		left outer join nation na on sl.n_id = na.n_id
+		left outer join city c on sl.c_id = c.c_id
+	</select>
+	
+	<select id="selectAllByUser" parameterType="int" resultType="scheduleList">
+		select u.nickname nickname, c.name city, na.name nation, sl.* 
+		from schedule_list sl
+		left outer join user u on sl.u_id = u.u_id
+		left outer join nation na on sl.n_id = na.n_id
+		left outer join city c on sl.c_id = c.c_id
+		where sl.u_id = #{uId}
+		order by sl.start_date
+	</select>
+	
+    <select id="selectAllByOneDay" parameterType="map" resultType="scheduleList">
+    	select u.nickname nickname, c.name city, na.name nation, sl.*
+    	from schedule_list sl
+    	left outer join user u on sl.u_id = u.u_id
+    	left outer join nation na on sl.n_id = na.n_id
+    	left outer join city c on sl.c_id = c.c_id
+    	<![CDATA[
+    	where sl.u_id = #{uId} and date_format(sl.start_date, '%Y-%m-%d') <= #{day} and #{day} <= date_format(sl.end_date, '%Y-%m-%d')
+    	]]>
+    	order by sl.register_date
+    </select>
+    
+	<select id="selectOne" parameterType="int" resultType="scheduleList">
+		select u.nickname nickname, c.name city, na.name nation, sl.*
+		from schedule_list sl
+		left outer join user u on sl.u_id = u.u_id
+		left outer join nation na on sl.n_id = na.n_id
+		left outer join city c on sl.c_id = c.c_id
+		where sl.s_list_id = #{sListId}
+	</select>
+	
+	<insert id="createScheduleList" parameterType="scheduleList">
+		insert into 
+		schedule_list (u_id, n_id, c_id, start_date, end_date, register_date, update_date)
+		values (#{uId}, #{nId}, #{cId}, #{startDate}, #{endDate}, current_timestamp(), current_timestamp())
+	</insert>
+	
+	<delete id="deleteScheduleList" parameterType="map">
+		delete from schedule_list
+		where s_list_id = #{sListId} and u_id = #{uId}
+	</delete>
+	
+	<update id="updateScheduleList" parameterType="scheduleList">
+		update schedule_list
+		set n_id = #{nId}, c_id = #{cId}, start_date = #{startDate}, end_date = #{endDate}, update_date = current_timestamp()
+		where s_list_id = #{sListId} and u_id = #{uId}
+	</update>
+</mapper>

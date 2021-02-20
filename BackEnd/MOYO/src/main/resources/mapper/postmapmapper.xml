@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.postmapmapper">
+	
+	<select id="selectAll" resultType="postmap" parameterType="map">
+		 select p.*, pml.pm_like_id, count(pl.pm_like_id) likes
+		  from postmap p
+          left outer join postmap_like pml on p.pm_id = pml.pm_id and #{uId} = pml.u_id
+          left outer join postmap_like pl on p.pm_id = pl.pm_id group by p.pm_id
+	</select>
+	
+	<select id="selectTop" resultType="postmap" parameterType="map">
+		 select p.*, pml.pm_like_id, count(pl.pm_like_id) likes
+		  from postmap p
+          left outer join postmap_like pml on p.pm_id = pml.pm_id and #{uId} = pml.u_id
+          left outer join postmap_like pl on p.pm_id = pl.pm_id group by p.pm_id
+          order by likes desc
+          limit 0, #{top}
+	</select>
+	
+	<select id="selectOne" resultType="postmap" parameterType="int">
+		select p.* , count(pm_like_id) as likes
+		from postmap p
+		left join postmap_like using(pm_id)
+		where pm_id = #{pmId}
+	    group by p.pm_id
+	</select>
+	
+	<insert id="insertPostmap" parameterType="postmap">
+		insert into postmap(contents, latitude, longitude, register_id, register_date)
+		values(#{contents}, #{latitude}, #{longitude}, #{registerId}, current_timestamp())
+	</insert>
+
+	<delete id="deletePostmap" parameterType="int">
+		delete from postmap where pm_id =  #{pmId}
+	</delete>
+	
+	<delete id="checkDuration" parameterType="String">
+		<![CDATA[
+		delete from postmap where timestampdiff(QUARTER, #{today}, register_date ) <= 1;
+		]]>
+	</delete>
+	
+	<insert id="insertPostmapLike" parameterType="postmaplike">
+		insert into postmap_like(u_id, pm_id) values(#{uId}, #{pmId}) 
+	</insert> 
+	
+	<delete id="deletePostmapLike" parameterType="int">
+		delete from postmap_like where pm_like_id =  #{pmLikeId}
+	</delete>
+	
+	<select id="selectPostmapLike" parameterType="int">
+		select count(*) from postmap_like where pm_id = #{pmId}
+	</select>
+	
+	<delete id="checkLikeDuplicate" parameterType="postmaplike">
+		delete from postmap_like where pm_id=#{pmId} and u_id = #{uId}
+	</delete>
+	
+	<select id="selectLikeOne" parameterType="postmaplike" resultType="postmaplike">
+		select * from postmap_like where pm_id=#{pmId} and u_id = #{uId}
+	</select>
+	
+</mapper>

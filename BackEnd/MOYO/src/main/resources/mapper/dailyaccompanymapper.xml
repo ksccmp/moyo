@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.dailyaccompanymapper">
+	<select id="selectAll" resultType="dailyAccompany">
+		select u.nickname nickname, uu.nickname accompanyNickname, uu.image accompanyImage, da.* 
+		from daily_accompany da
+		left outer join user u on da.u_id = u.u_id
+		left outer join user uu on da.accompany_id = uu.u_id
+	</select>
+	<select id="selectAllByUser" parameterType="int" resultType="dailyAccompany">
+		select u.nickname nickname, uu.nickname accompanyNickname, uu.image accompanyImage, da.* 
+		from daily_accompany da
+		left outer join user u on da.u_id = u.u_id
+		left outer join user uu on da.accompany_id = uu.u_id
+		where da.u_id = #{uId}
+	</select>
+	<select id="selectAllByOneDay" parameterType="map" resultType="dailyAccompany">
+		select uu.nickname accompanyNickname, uu.image accompanyImage, da.*
+		from daily_accompany da
+		left outer join user uu on da.accompany_id = uu.u_id
+    	where da.u_id = #{uId} and date_format(da.day, '%Y-%m-%d') = #{day}
+    	order by da.register_date
+	</select>
+	<select id="selectOne" parameterType="int" resultType="dailyAccompany">
+		select u.nickname nickname, uu.nickname accompanyNickname, da.* 
+		from daily_accompany da
+		left outer join user u on da.u_id = u.u_id
+		left outer join user uu on da.accompany_id = uu.u_id
+		where da.d_ac_id = #{dAcId}
+	</select>
+	<insert id="createDailyAccompany" parameterType="dailyAccompany">
+		insert into 
+		daily_accompany (u_id, accompany_id, day, register_date, update_date)
+		values (#{uId}, #{accompanyId}, #{day}, current_timestamp(), current_timestamp())	
+	</insert>
+	<delete id="deleteDailyAccompany" parameterType="map">
+		delete from daily_accompany
+		where d_ac_id = #{dAcId} and u_id = #{uId}
+	</delete>
+	<update id="updateDailyAccompany" parameterType="dailyAccompany">
+		update daily_accompany
+		set day = #{day}, update_date = current_timestamp()
+		where d_ac_id = #{dAcId} and u_id = #{uId}
+	</update>
+</mapper>

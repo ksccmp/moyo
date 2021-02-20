@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+
+	<typeAliases>
+		<typeAlias type="com.moyo.MOYO.dto.Community" alias="community"/>
+		<typeAlias type="com.moyo.MOYO.dto.CommunityComment" alias="communityComment"/>
+		<typeAlias type="com.moyo.MOYO.dto.CommunityType" alias="communityType"/>
+		<typeAlias type="com.moyo.MOYO.dto.User" alias="user"/>
+		<typeAlias type="com.moyo.MOYO.dto.AccompanyBoard" alias="accompanyBoard"/>
+		<typeAlias type="com.moyo.MOYO.dto.Filter" alias="filter"/>
+		<typeAlias type="com.moyo.MOYO.dto.ScheduleList" alias="scheduleList"/>
+		<typeAlias type="com.moyo.MOYO.dto.DailyAccompany" alias="dailyAccompany"/>
+		<typeAlias type="com.moyo.MOYO.dto.DailyMemo" alias="dailyMemo"/>
+		<typeAlias type="com.moyo.MOYO.dto.Postmap" alias="postmap"/>
+		<typeAlias type="com.moyo.MOYO.dto.Postmaplike" alias="postmaplike"/>
+		<typeAlias type="com.moyo.MOYO.dto.Nation" alias="nation"/>
+		<typeAlias type="com.moyo.MOYO.dto.City" alias="city"/>
+		<typeAlias type="com.moyo.MOYO.dto.TravelType" alias="travelType"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="mapper/communitymapper.xml" />
+		<mapper resource="mapper/communitycommentmapper.xml"/>
+		<mapper resource="mapper/usermapper.xml"/>
+		<mapper resource="mapper/accompanyboardmapper.xml"/>
+		<mapper resource="mapper/schedulelistmapper.xml"/>
+		<mapper resource="mapper/dailyaccompanymapper.xml"/>
+		<mapper resource="mapper/dailymemomapper.xml"/>
+		<mapper resource="mapper/postmapmapper.xml" />
+	</mappers>
+</configuration>

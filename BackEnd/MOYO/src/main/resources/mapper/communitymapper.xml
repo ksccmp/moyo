@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.communitymapper">
+	<select id="selectAll" parameterType="map" resultType="community">
+		select u.nickname nickname, ct.name communityType, cm.* 
+		from community cm
+		left outer join user u on cm.u_id = u.u_id
+		left outer join community_type ct on cm.cm_type_id = ct.cm_type_id
+		<where>
+		<if test="cmTypeId != null and cmTypeId != 0">
+		and cm.cm_type_id = #{cmTypeId}
+		</if>
+		<if test="searchWord != null and searchWord != ''">
+		and title like concat('%',#{searchWord}, '%')
+		</if>
+		</where>
+		order by register_date desc
+	</select>
+	<select id="selectAllByUser" parameterType="int" resultType="community">
+		select u.nickname nickname, ct.name communityType, cm.* 
+		from community cm
+		left outer join user u on cm.u_id = u.u_id
+		left outer join community_type ct on cm.cm_type_id = ct.cm_type_id 
+		where cm.u_id = #{uId}
+	</select>
+	<select id="selectOne" parameterType="int" resultType="community">
+		select u.nickname nickname, ct.name communityType, cm.* 
+		from community cm
+		left outer join user u on cm.u_id = u.u_id
+		left outer join city c on cm.c_id = c.c_id
+		left outer join community_type ct on cm.cm_type_id = ct.cm_type_id
+		where cm.cm_id = #{cmId}
+	</select>
+	<select id="selectCommunityType" resultType="communityType">
+		select * from community_type
+	</select>
+	<insert id="createCommunity" parameterType="community">
+		insert into
+		community (u_id, cm_type_id, title, contents, views, register_date, update_date)
+		values (#{uId}, #{cmTypeId}, #{title}, #{contents}, #{views}, current_timestamp(), current_timestamp())
+	</insert>
+	<delete id="deleteCommunity" parameterType="int">
+		delete from community
+		where cm_id = #{cmId}
+	</delete>
+	<update id="updateCommunity" parameterType="community">
+		update community
+		set cm_type_id = #{cmTypeId}, title = #{title}, contents = #{contents}, update_date = #{updateDate}
+		where cm_id = #{cmId}
+	</update>
+	
+</mapper>

@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  height: 100%;
+  font-family: 'Nanum Gothic', sans-serif;
+  background-color: #f2f5f8;
+}
+
+.moyo_center_grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#root {
+  height: 100%;
+}
+
+// google map scss
+#googleMap > div {
+  position: relative !important;
+}
+
+#googleMap > div > div {
+  position: relative !important;
+}
+
+// calender : accompany date selector
+
+.react-calendar__month-view__weekdays__weekday > abbr {
+  text-decoration: none;
+}

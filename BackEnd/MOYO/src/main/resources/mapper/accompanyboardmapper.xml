@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.accompanyboardmapper">
+
+	<select id="selectOne" parameterType="int" resultType="accompanyBoard">
+		select u.nickname, u.image, u.age, u.gender, ab.*, c.name city, na.name nation, tt.name type
+		  FROM accompany_board ab
+		  left outer join user u on ab.u_id = u.u_id
+		  left outer join city c on ab.c_id = c.c_id
+		  left outer join nation na on ab.n_id = na.n_id
+		  left outer join travel_type tt on ab.t_type_id = tt.t_type_id 
+		 where ac_board_id = #{acBoardId}
+	</select>
+	
+	<select id="selectAll" parameterType="filter" resultType="accompanyBoard">
+		SELECT u.nickname, u.image, u.age, u.gender, ab.*, c.name city, na.name nation, tt.name type
+		  FROM accompany_board ab
+		  left outer join user u on ab.u_id = u.u_id
+		  left outer join city c on ab.c_id = c.c_id
+		  left outer join nation na on ab.n_id = na.n_id
+		  left outer join travel_type tt on ab.t_type_id = tt.t_type_id
+		 WHERE #{searchDate} between ab.start_date and ab.end_date
+		    and #{nId} = ab.n_id
+		    and (case when #{cId}=0 then 1=1
+		              else #{cId}=ab.c_id end)
+		   <if test="searchAge[0]!=0">
+		    and u.age in <foreach collection="searchAge" item="value" open="(" close=")" separator=",">
+             					#{value} </foreach>
+		   </if>
+		    and (case when #{searchGender}='n' then 1=1
+		              else #{searchGender}=u.gender end)
+		   <if test="searchType[0]!=0">
+		    and ab.t_type_id in <foreach collection="searchType" item="value" open="(" close=")" separator=",">
+					               		#{value} </foreach> 
+		   </if>
+		   <choose>
+				<when test="searchCondition=='contents'">
+					and contents like concat('%',#{searchWord}, '%')
+				</when>
+				<when test="searchCondition=='all'">
+					and (title like concat('%',#{searchWord}, '%') or contents like concat('%',#{searchWord}, '%'))
+				</when>
+				<otherwise>
+					and title like concat('%',#{searchWord}, '%')
+				</otherwise>
+		   </choose>
+			and ab.deadline_toggle = 'n'
+			<choose>
+				<when test="searchSort=='start'">
+					order by ab.start_date
+				</when>
+				<when test="searchSort=='end'">
+					order by ab.end_date
+				</when>
+				<otherwise>
+					order by ab.update_date
+				</otherwise>
+			</choose>	             
+	</select>
+	
+	<insert id="createAccompanyBoard" parameterType="accompanyBoard" useGeneratedKeys="true" keyProperty="acBoardId">
+	    insert into accompany_board (title, u_id, n_id, c_id,
+	    <if test="tTypeId!=null">t_type_id,</if> contents, start_date, end_date,
+	    <if test="wantAge!=null">want_age,</if> 
+	    <if test="wantGender!=null">want_gender,</if> register_date, update_date)
+	    values (#{title}, #{uId}, #{nId}, #{cId}, 
+	    <if test="tTypeId!=null">#{tTypeId},</if> #{contents}, #{startDate}, #{endDate},
+	    <if test="wantAge!=null">#{wantAge},</if> 
+	     <if test="wantGender!=null">#{wantGender},</if> current_timestamp(), current_timestamp())
+	</insert>
+	
+	<delete id="deleteAccompanyBoard" parameterType="int">
+		delete from accompany_board where ac_board_id = #{acBoardId}
+	</delete>
+	
+	<update id="updateAccompanyBoard" parameterType="accompanyBoard">
+	    update accompany_board
+	    set title = #{title}, n_id = #{nId}, c_id = #{cId},  
+		    <if test="tTypeId!=null">t_type_id = #{tTypeId},</if> 
+		    contents = #{contents}, start_date = #{startDate}, end_date = #{endDate}, 
+		    <if test="wantAge!=null">want_age = #{wantAge},</if> 
+		    <if test="wantGender!=null">want_gender = #{wantGender},</if> 
+		    <if test="deadlineToggle!=null">deadline_toggle = #{deadlineToggle},</if>
+		    update_date = current_timestamp()
+	    where ac_board_id = #{acBoardId}
+	</update>
+	
+	<select id="selectAllByUser" parameterType="int" resultType="accompanyBoard">
+		select u.nickname, u.image, u.age, u.gender, ab.*, c.name city, na.name nation, tt.name type
+		  FROM accompany_board ab
+		  left outer join user u on ab.u_id = u.u_id
+		  left outer join city c on ab.c_id = c.c_id
+		  left outer join nation na on ab.n_id = na.n_id
+		  left outer join travel_type tt on ab.t_type_id = tt.t_type_id 
+		 where ab.u_id = #{uId}
+		 order by ab.update_date
+	</select>
+	
+	<update id="updateDeadlineToggle" parameterType="map">
+		update accompany_board set deadline_toggle = #{deadlineToggle} where ac_board_id = #{acBoardId}
+	</update>
+	
+	<select id="selectNation" resultType="nation">
+		select * from nation
+	</select>
+	
+	<select id="selectCity" resultType="city" parameterType="int">
+		select c.* from city c join nation n on c.n_id = n.n_id where n.n_id = #{nId}
+	</select>
+	
+	<select id="selectTravelType" resultType="travelType">
+		select * from travel_type
+	</select>
+</mapper>

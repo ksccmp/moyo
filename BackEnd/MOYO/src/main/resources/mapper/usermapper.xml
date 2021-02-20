@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moyo.usermapper">
+	<select id="selectAll" resultType="user">
+		select * from user
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="user">
+		select * from user
+		where u_id = #{uId}
+	</select>
+	
+	<select id="selectOneBySocialId" resultType="user">
+		select u_id, nickname, age, gender, image, before_ps_id, after_ps_id, provider, level, register_date, update_date from user
+		where social_id = #{socialId} and provider = #{provider}	
+	</select>
+	
+	<select id="selectOneByNickname" resultType="user">
+		select u_id, nickname, age, gender, image, before_ps_id, after_ps_id, provider, level, register_date, update_date from user
+		where nickname = #{nickname}
+	</select>
+	
+	<insert id="registerUser" parameterType="user" >
+	    insert into
+	    user (nickname, age, gender, image, before_ps_id, after_ps_id, social_id, provider, level, register_date, update_date)
+	    values (#{nickname}, #{age}, #{gender}, #{image}, #{beforePsId}, #{afterPsId}, #{socialId}, #{provider}, #{level}, current_timestamp(), current_timestamp())
+	</insert>
+	
+	<delete id="deleteUser" parameterType="int">
+		delete from user where u_id = #{uId}
+	</delete>
+	
+	<update id="updateUser" parameterType="user">
+	    update user
+	    set nickname = #{nickname}, age = #{age}, gender = #{gender}, image = #{image}, image_name = #{imageName}, update_date = current_timestamp()
+	    where u_id = #{uId}
+	</update>
+	
+	<update id="updateUserImage" parameterType="map">
+		update user
+		set image = #{image}, image_name = #{imageName}, update_date = current_timestamp()
+		where u_id = #{uId}
+	</update>
+	
+</mapper>
